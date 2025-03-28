@@ -1,5 +1,21 @@
 For testing our API and current database design, please download postgres SQL
-And create a database, and use the query tool for table construction
+
+Step1: Download PostgreSQL
+Go to the official site: https://www.postgresql.org/download/
+Choose your operating system (Windows, macOS, Linux) and follow the installer instructions.
+
+Step2: Install Components
+During the installation process, make sure that you:
+use the default port (5432), set a password (you'll use this later), and note down the username (usually postgres).
+
+Step3: Create a Database
+Open pgAdmin
+Right-click on Databases > Create > Database
+Set the name to something like rideshare_db, click save
+
+Step4: Create the main table
+after the database is created , click on the buttom and top-left saying query tool
+Enter the query code below:
 As of now, our Rides table has been implemented, using the postgres query below:
 CREATE TABLE Rides (
     id INT AUTO_INCREMENT PRIMARY KEY,
