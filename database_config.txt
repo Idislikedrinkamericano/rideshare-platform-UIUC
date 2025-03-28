@@ -30,3 +30,11 @@ CREATE TABLE Rides (
     INDEX idx_starting_location (starting_location),
     INDEX idx_end_destination (end_destination)
 );
+
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
