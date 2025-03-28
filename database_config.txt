@@ -16,7 +16,8 @@ Set the name to something like rideshare_db, click save
 Step4: Create the main table
 after the database is created , click on the buttom and top-left saying query tool
 Enter the query code below:
-As of now, our Rides table has been implemented, using the postgres query below:
+As of now, our Rides table has been implemented user also, using the postgres query below:
+
 CREATE TABLE Rides (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ride_time DATETIME NOT NULL,
@@ -38,3 +39,19 @@ CREATE TABLE Users (
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+Below are test case for rides:
+INSERT INTO Rides (ride_time, number_of_passengers, starting_location, end_destination, driver_username, ride_description)
+VALUES 
+('2025-04-01 10:00:00', 3, 'UIUC', 'O\'Hare Airport', 'john_doe', 'Leaving for Chicago, space for 3 people.'),
+('2025-04-02 15:30:00', 2, 'UIUC', 'Midway Airport', 'alice_smith', 'Going home, light luggage preferred.');
+
+Below are test case for users:
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
