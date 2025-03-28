@@ -47,11 +47,6 @@ VALUES
 ('2025-04-02 15:30:00', 2, 'UIUC', 'Midway Airport', 'alice_smith', 'Going home, light luggage preferred.');
 
 Below are test case for users:
-CREATE TABLE Users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+INSERT INTO Users (username, email, password_hash)
+VALUES ('john_doe', 'john@example.com', 'fake_hashed_password_123');
 
