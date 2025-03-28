@@ -1,0 +1,16 @@
+For testing our API and current database design, please download postgres SQL
+And create a database, and use the query tool for table construction
+As of now, our Rides table has been implemented, using the postgres query below:
+CREATE TABLE Rides (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ride_time DATETIME NOT NULL,
+    number_of_passengers INT NOT NULL,
+    starting_location VARCHAR(255) NOT NULL,
+    end_destination VARCHAR(255) NOT NULL,
+    driver_username VARCHAR(100) NOT NULL,
+    ride_description TEXT,
+    INDEX idx_ride_time (ride_time),
+    INDEX idx_passengers (number_of_passengers),
+    INDEX idx_starting_location (starting_location),
+    INDEX idx_end_destination (end_destination)
+);
