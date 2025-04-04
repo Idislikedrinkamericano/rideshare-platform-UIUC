@@ -16,17 +16,53 @@ Set the name to something like rideshare_db, click save
 Step4: Create the main table
 after the database is created , click on the buttom and top-left saying query tool
 Enter the query code below:
-As of now, our Rides table has been implemented, using the postgres query below:
+As of now, our Rides table has been implemented user also, using the postgres query below:
+
+
+
 CREATE TABLE Rides (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ride_time DATETIME NOT NULL,
+    id SERIAL PRIMARY KEY,
+    ride_time TIMESTAMP NOT NULL,
     number_of_passengers INT NOT NULL,
     starting_location VARCHAR(255) NOT NULL,
     end_destination VARCHAR(255) NOT NULL,
     driver_username VARCHAR(100) NOT NULL,
-    ride_description TEXT,
-    INDEX idx_ride_time (ride_time),
-    INDEX idx_passengers (number_of_passengers),
-    INDEX idx_starting_location (starting_location),
-    INDEX idx_end_destination (end_destination)
+    ride_description TEXT
 );
+
+CREATE INDEX idx_ride_time ON Rides (ride_time);
+CREATE INDEX idx_passengers ON Rides (number_of_passengers);
+CREATE INDEX idx_starting_location ON Rides (starting_location);
+CREATE INDEX idx_end_destination ON Rides (end_destination);
+
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+Here is the query for our search bar in the app:
+
+SELECT * FROM Rides
+WHERE
+    starting_location ILIKE '%' || :pickup_location || '%' AND
+    end_destination ILIKE '%' || :dropoff_location || '%' AND
+    ride_time >= :pickup_datetime AND
+    ride_time <= :dropoff_datetime AND
+    number_of_passengers >= :passenger_count
+ORDER BY ride_time ASC;
+
+
+Below are the possible query we may use in the app(Message between passanger and driver):
+CREATE TABLE Messages (
+    id SERIAL PRIMARY KEY,
+    ride_id INT REFERENCES Rides(id) ON DELETE CASCADE,
+    sender_id INT REFERENCES Users(id) ON DELETE CASCADE,
+    receiver_id INT REFERENCES Users(id) ON DELETE CASCADE,
+    content TEXT NOT NULL,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
