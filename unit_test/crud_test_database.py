@@ -116,5 +116,105 @@ class TestRidesCRUD(unittest.TestCase):
 
         print("Delete passed")
 
+
+    def test_create_invalid_ride(self):
+        insert_query = """
+            INSERT INTO Rides (ride_time, number_of_passengers, starting_location, end_destination, driver_username, ride_description)
+            VALUES (NOW(), -2, 'A', 'B', 'driver_invalid', 'Invalid test ride')
+            RETURNING *;
+        """
+        with self.assertRaises(psycopg2.Error):
+            self.cursor.execute(insert_query)
+        print("Number less than zero")
+
+    def test_read_nonexistent_ride(self):
+        select_query = """
+            SELECT * FROM Rides WHERE driver_username = %s;
+        """
+        self.cursor.execute(select_query, ('non_existent_user_123',))
+        ride = self.cursor.fetchone()
+        self.assertIsNone(ride, "No record driver!")
+        print("Nonexistent driver")
+
+    def test_update_nonexistent_ride(self):
+        fake_id = -999
+        new_description = "This ride does not exist"
+        update_query = "UPDATE Rides SET ride_description = %s WHERE id = %s;"
+        self.cursor.execute(update_query, (new_description, fake_id))
+        self.assertEqual(self.cursor.rowcount, 0, "No row should be updated for nonexistent ride.")
+        print("Update nonexistent passed")
+    
+    def test_delete_nonexistent_ride(self):
+        fake_id = -999
+        delete_query = "DELETE FROM Rides WHERE id = %s;"
+        self.cursor.execute(delete_query, (fake_id,))
+        self.assertEqual(self.cursor.rowcount, 0, "No row should be deleted for nonexistent ride.")
+        print("Delete nonexistent passed")
+
+
+# ********* Additional Unit Tests for Requests and Ratings Table *********
+# Testing basic operations: create and read (MVP level testing only, for better front-back end connection)
+class TestRequests(unittest.TestCase):
+    # Set up connection to database before all tests
+    @classmethod
+    def setUpClass(cls):
+        cls.conn = psycopg2.connect(
+            dbname="weride",
+            user="postgres",
+            password="REDACTED_LOCAL_DB_PASSWORD",
+            host="localhost"
+        )
+        cls.conn.autocommit = True
+        cls.cur = cls.conn.cursor()
+
+    # Close connection after all tests
+    @classmethod
+    def tearDownClass(cls):
+        cls.cur.close()
+        cls.conn.close()
+
+    def test_create_and_read_request(self):
+        # Insert a request
+        self.cur.execute(
+            "INSERT INTO Requests (ride_id, passenger_id) VALUES (%s, %s) RETURNING *;",
+            (1, 2)  # Make sure these IDs exist
+        )
+        request = self.cur.fetchone()
+        pprint({"Created Request": request})
+        self.assertIsNotNone(request)
+        print("Request passed")
+
+
+class TestRatings(unittest.TestCase):
+    # Set up database connection
+    @classmethod
+    def setUpClass(cls):
+        cls.conn = psycopg2.connect(
+            dbname="weride",
+            user="postgres",
+            password="REDACTED_LOCAL_DB_PASSWORD",
+            host="localhost"
+        )
+        cls.conn.autocommit = True
+        cls.cur = cls.conn.cursor()
+
+    # Close connection
+    @classmethod
+    def tearDownClass(cls):
+        cls.cur.close()
+        cls.conn.close()
+
+    def test_create_and_read_rating(self):
+        # Insert a rating
+        self.cur.execute(
+            "INSERT INTO Ratings (ride_id, reviewer_id, driver_id, rating) VALUES (%s, %s, %s, %s) RETURNING *;",
+            (1, 2, 3, 5)  # Make sure these IDs exist
+        )
+        rating = self.cur.fetchone()
+        pprint({"Created Rating": rating})
+        self.assertIsNotNone(rating)
+        print("Rating passed")
+
+
 if __name__ == "__main__":
     unittest.main()
