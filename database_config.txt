@@ -43,6 +43,23 @@ CREATE TABLE Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Stores ride requests from passengers to join a ride
+CREATE TABLE Requests (
+    request_id SERIAL PRIMARY KEY,                         
+    ride_id INT REFERENCES Rides(id) ON DELETE CASCADE,     -- The ride being requested
+    passenger_id INT REFERENCES Users(id),                 
+    status VARCHAR(20) DEFAULT 'pending'                   
+);
+
+-- Rating table for basic rating functionality
+CREATE TABLE Ratings (
+    rating_id SERIAL PRIMARY KEY,                           
+    ride_id INT REFERENCES Rides(id) ON DELETE CASCADE,    
+    reviewer_id INT REFERENCES Users(id),                 
+    driver_id INT REFERENCES Users(id),                     -- Driver who receives the rating
+    rating INT CHECK (rating BETWEEN 1 AND 5),              -- Score: 1 to 5        
+);
+
 
 Here is the query for our search bar in the app:
 
