@@ -18,10 +18,10 @@ class TestRidesCRUD(unittest.TestCase):
     def setUpClass(cls):
         #client set up
         cls.connection = psycopg2.connect(
-            dbname = "weride",
-            user = "postgres",
-            password = "REDACTED_LOCAL_DB_PASSWORD",
-            host = "localhost"
+            dbname = "weride", #when testing, replace with your PostgreSQL username
+            user = "postgres", #when testing, replace with your PostgreSQL username
+            password = "REDACTED_LOCAL_DB_PASSWORD", #when testing, replace with your PostgreSQL username
+            host = "localhost" #when testing, replace with your PostgreSQL username
         )
         #use autocommit for saving changes automatically.
         cls.connection.autocommit = True
@@ -113,7 +113,7 @@ class TestRidesCRUD(unittest.TestCase):
         self.cursor.execute(select_query, (ride_id,))
         result = self.cursor.fetchone()
         self.assertIsNone(result, "The ride record should be deleted.")
-
+        
         print("Delete passed")
 
 
