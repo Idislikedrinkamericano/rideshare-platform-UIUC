@@ -35,6 +35,20 @@ CREATE INDEX idx_passengers ON Rides (number_of_passengers);
 CREATE INDEX idx_starting_location ON Rides (starting_location);
 CREATE INDEX idx_end_destination ON Rides (end_destination);
 
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////
+
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,

@@ -12,6 +12,9 @@
     "antd-img-crop": "^4.18.0",
     "aws-amplify": "^5.3.11",
     "axios": "^1.5.1",
+    "body-parser": "^2.2.0",
+    "express": "^4.21.2",
+    "pg": "^8.14.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -42,5 +45,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "You can view the full proposal [here](Project%20Proposal.pdf).",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
