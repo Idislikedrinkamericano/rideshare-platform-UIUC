@@ -12,8 +12,8 @@ const { Pool } = require('pg');
 
 //setting up express.js client
 const app = express();
-//local port 3000
-const port = 3000; 
+//local port 4000
+const port = 4000; 
 
 // we use body-parser for parsing json requests, this essentially put client requests into a accessable form instead of purely JSON
 app.use(bodyParser.json());
@@ -73,12 +73,15 @@ app.get('/rides', async (req, res) => {
 // **** GET A RIDE ****
 // This is a flexible search endpoint
 // It allows the client to search for rides based on various parameters
-app.get('/rides', async (req, res) => {
+// the result of search would be come rides that's within the time range and
+// have a passengerner number that's greater than the passengeres number provided by the user
+app.get('/rides/search', async (req, res) => {
   try {
     //extracting request information from the client url
     const {
       id,
-      ride_time,
+      start_time,
+      end_time,    
       starting_location,
       end_destination,
       driver_username,
@@ -101,11 +104,18 @@ app.get('/rides', async (req, res) => {
       values.push(id);
     }
     
-    if (ride_time) {
+    if (start_time) {
       const paramIdx = index;
       index += 1;
-      conditions.push(`ride_time = $${paramIdx}`);
-      values.push(ride_time);
+      conditions.push(`ride_time >= $${paramIdx}`);
+      values.push(start_time);
+    }
+
+    if (end_time) {
+      const paramIdx = index;
+      index += 1;
+      conditions.push(`ride_time <= $${paramIdx}`);
+      values.push(end_time);
     }
     
     if (starting_location) {
@@ -132,7 +142,7 @@ app.get('/rides', async (req, res) => {
     if (number_of_passengers) {
       const paramIdx = index;
       index += 1;
-      conditions.push(`number_of_passengers = $${paramIdx}`);
+      conditions.push(`number_of_passengers >= $${paramIdx}`);
       values.push(number_of_passengers);
     }
     

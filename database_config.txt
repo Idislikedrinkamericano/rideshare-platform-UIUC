@@ -35,6 +35,42 @@ CREATE INDEX idx_passengers ON Rides (number_of_passengers);
 CREATE INDEX idx_starting_location ON Rides (starting_location);
 CREATE INDEX idx_end_destination ON Rides (end_destination);
 
+
+SQL query for updating the db:
+Drop ride_time column
+ALTER TABLE Rides DROP COLUMN ride_time;
+
+-- Step 2: Add start_time and end_time as nullable first
+ALTER TABLE Rides
+ADD COLUMN start_time TIMESTAMP,
+ADD COLUMN end_time TIMESTAMP;
+
+-- Step 3: Fill in fallback values (you can choose something more meaningful if needed)
+-- Here we use current timestamp as a placeholder
+UPDATE Rides
+SET start_time = NOW(), end_time = NOW();
+
+-- Step 4: Set columns to NOT NULL
+ALTER TABLE Rides
+ALTER COLUMN start_time SET NOT NULL,
+ALTER COLUMN end_time SET NOT NULL;
+
+-- Step 5: Add indexes
+CREATE INDEX idx_start_time ON Rides (start_time);
+CREATE INDEX idx_end_time ON Rides (end_time);
+
+
+
+
+
+
+
+
+
+
+
+////////////////////
+
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
