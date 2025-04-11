@@ -7,7 +7,7 @@ const pool = new Pool({
   host: 'localhost',
   database: 'weride',
   password: 'REDACTED_LOCAL_DB_PASSWORD',
-  port: 5432
+  port: 4001
 });
 router.post('/register', async (req, res) => {
   const { username, password, email } = req.body;
