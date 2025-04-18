@@ -37,3 +37,21 @@
 .read-the-docs {
     color: #888;
 }
+
+.ws-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: #001529;
+    padding: 0 24px;
+  }
+  
+  .ws-header .ant-btn-primary {
+    background: #1890ff;
+    border-color: #1890ff;
+  }
+  
+  .ws-header .ant-btn {
+    color: #fff;
+  }
+  
