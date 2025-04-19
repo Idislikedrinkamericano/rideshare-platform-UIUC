@@ -9,19 +9,13 @@ import './WeShare.css'
 export default function WeShare() {
   const navigate = useNavigate()
   return (
-    <>
-      <Layout.Header className="ws-header">
-        <Space>
-          <Button type="primary" onClick={() => navigate('/login')}>Sign In</Button>
-          <Button onClick={() => navigate('/signup')}>Sign Up</Button>
-        </Space>
-      </Layout.Header>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Main />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </>
+      <>
+          <Routes>
+              <Route path = {"/signup"} element = {<Signup/>}/>
+              <Route path = {"/login"} element = {<Login/>}/>
+              <Route path = {"/main"} element = {<Main/>}/>
+              <Route path = {"/"} element = {<Navigate to = {"/Login"}/>}/>
+          </Routes>
+      </>
   )
 }
