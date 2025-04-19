@@ -10,7 +10,10 @@ import {
     Typography,
     Breadcrumb, Layout, Menu, theme, Avatar, Table, DatePicker, Modal
 } from "antd";
-import { UserOutlined } from '@ant-design/icons';
+import {
+    SearchOutlined,
+    UserOutlined
+} from "@ant-design/icons";
 import { NavLink, useNavigate} from "react-router-dom";
 import moment from 'moment';
 import axios from "axios";
@@ -18,24 +21,21 @@ import axios from "axios";
 const { RangePicker } = DatePicker;
 const Main = () => {
     const { Header, Content, Footer, Sider } = Layout;
-    const { Search } = Input;
-    const items = [
-        {
-            label: 'Current Trip',
-            key: 'trips',
-        },
-        {
-            label: 'Your Trip',
-            key: 'own_trip',
-        }]
     const [current, setCurrent] = useState('trips');
-    const onClick = e => {
+    const [userTrips, setUserTrips] = useState(false);
+    let navigate = useNavigate();
+    const onClick_Menu = e => {
         console.log('click ', e);
         setCurrent(e.key);
+        if (current === 'trips') {
+            setUserTrips(true)
+        } else {
+            setUserTrips(false);
+        }
     };
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
-    const onFinish = async (values) => {
+    const onSearch = async (values) => {
         setLoading(true);
         const start_time = values.dateRange ? values.dateRange[0].format('YYYY-MM-DDTHH:mm') : '';
         const end_time = values.dateRange ? values.dateRange[1].format('YYYY-MM-DDTHH:mm') : '';
@@ -73,82 +73,84 @@ const Main = () => {
         },
         { title: 'Number of Passengers', dataIndex: 'number_of_passengers', key: 'number_of_passengers' },
         { title: 'Description', dataIndex: 'ride_description', key: 'ride_description' },
+        { key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
+                    <a>Add</a>
+                </Space>
+            ),
+        },
     ];
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-    const handleOk = () => {
-        setIsModalOpen(false);
-    };
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
 
     return (
         <>
             <Layout>
-                <Header style={{ background: "#afcae3", display: 'flex', alignItems: 'center', minHeight: 100}}>
+                <Header style={{ background: "#e7e7e7", display: 'flex', alignItems: 'center', minHeight: 90}}>
                     <Space direction="horizontal" size="middle" style={{ display: "flex", justifyContent: "space-between" }}>
-                        <Avatar size={64} icon={<UserOutlined />} />
-                        <div style={{width:'30px'}}></div>
-                        <Button type="primary" onClick={showModal}>
-                            Search Your Trip
-                        </Button>
-                        <Modal width="1000px" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-                            <div style={{ padding: '20px' }}>
-                                <h1>Ride Search</h1>
-                                <Form layout="vertical" onFinish={onFinish}>
-                                    <Form.Item label="Starting Location" name="pickupLocation">
-                                        <Input placeholder="e.g. Champaign" />
-                                    </Form.Item>
-                                    <Form.Item label="End Destination" name="dropoffLocation">
-                                        <Input placeholder="e.g. Chicago" />
-                                    </Form.Item>
-                                    <Form.Item label="Date and Time Range" name="dateRange">
-                                        <RangePicker showTime format="YYYY-MM-DD HH:mm" />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Number of Passengers"
-                                        name="passengerCount"
-                                        initialValue={1}
-                                        rules={[{ required: true, message: 'Please input number of passengers' }]}
-                                    >
-                                        <Input type="number" min={1} />
-                                    </Form.Item>
-                                    <Form.Item>
-                                        <Button type="primary" htmlType="submit" loading={loading}>
-                                            Search
-                                        </Button>
-                                    </Form.Item>
-                                </Form>
-                                <Table dataSource={data} columns={columns} rowKey="id" loading={loading} />
-                            </div>
-                        </Modal>
-                        <div style={{width:'900px'}}></div>
-                        <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} style={{ background: "#afcae3", minHeight: 120, display: 'flex', alignItems: 'center'}}/>
+                        <div style={{width:'70px'}}></div>
+                        <Avatar size={64} icon={<UserOutlined />} onClick={()=>{navigate('/login')}}/>
+                        <div style={{width:'500px'}}></div>
+                        <Menu onClick={onClick_Menu} selectedKeys={[current]} mode="horizontal" items={[{
+                                label: 'Search Trips',
+                                key: 'trips',
+                                icon: <SearchOutlined/>
+                            }, {
+                                label: 'Your Trips',
+                                key: 'own_trip',
+                                icon: <UserOutlined/>
+                            }]} style={{ background: "#e7e7e7", width: 250, display: 'flex', alignItems: 'center'}}  disabledOverflow/>
                     </Space>
                 </Header>
                     <Layout
                         style={{  background:"#FFFFFF" }}
                     >
                         <Content style={{ padding: '0 24px', minHeight: 900 }}>
-                            <Space direction="vertical" size="middle" style={{ display: "flex", justifyContent: "space-between" }}>
-                                <div style={{width:'30px'}}></div>
-                                <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#c2fcae" }}>
-                                    Information
-                                </Card>
-                                <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#c2fcae" }}>
-                                    Information
-                                </Card>
-                                <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#ffd6e8" }}>
-                                    Information
-                                </Card>
-                                <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#ffe4c9" }}>
-                                    Add Your Trip
-                                </Card>
-                            </Space>
+                            {userTrips ? (
+                                <Space direction="vertical" size="middle" style={{ display: "flex", justifyContent: "space-between" }}>
+                                    <div style={{width:'30px'}}></div>
+                                    <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#c2fcae" }}>
+                                        Information
+                                    </Card>
+                                    <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#c2fcae" }}>
+                                        Information
+                                    </Card>
+                                    <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#ffd6e8" }}>
+                                        Information
+                                    </Card>
+                                    <Card style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: "1650px", height: "190px", background: "#ffe4c9" }}>
+                                        Add Your Trip
+                                    </Card>
+                                </Space>
+                                ) : (
+                                <div style={{ padding: '100px' }}>
+                                    <Form layout="vertical" onFinish={onSearch}>
+                                        <Form.Item label="Starting Location" name="pickupLocation">
+                                            <Input placeholder="e.g. Champaign" />
+                                        </Form.Item>
+                                        <Form.Item label="End Destination" name="dropoffLocation">
+                                            <Input placeholder="e.g. Chicago" />
+                                        </Form.Item>
+                                        <Form.Item label="Date and Time Range" name="dateRange">
+                                            <RangePicker showTime format="YYYY-MM-DD HH:mm" />
+                                        </Form.Item>
+                                        <Form.Item
+                                            label="Number of Passengers"
+                                            name="passengerCount"
+                                            initialValue={1}
+                                            rules={[{ required: true, message: 'Please input number of passengers' }]}
+                                        >
+                                            <Input type="number" min={1} />
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <Button type="primary" htmlType="submit" loading={loading}>
+                                                Search
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                    <Table dataSource={data} columns={columns} rowKey="id" loading={loading} />
+                                </div>
+                            )}
+
                         </Content>
                     </Layout>
             </Layout>
