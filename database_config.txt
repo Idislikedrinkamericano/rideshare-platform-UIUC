@@ -21,24 +21,25 @@ As of now, our Rides table has been implemented user also, using the postgres qu
 
 
 CREATE TABLE Rides (
-    id SERIAL PRIMARY KEY,
-    ride_time TIMESTAMP NOT NULL,
-    number_of_passengers INT NOT NULL,
-    starting_location VARCHAR(255) NOT NULL,
-    end_destination VARCHAR(255) NOT NULL,
-    driver_username VARCHAR(100) NOT NULL,
-    ride_description TEXT
+    id                    SERIAL PRIMARY KEY,
+    user_id               INT    NOT NULL
+                            REFERENCES Users(id)
+                            ON DELETE CASCADE,
+
+    ride_time             TIMESTAMP NOT NULL,
+    number_of_passengers  INT       NOT NULL,
+    starting_location     VARCHAR(255) NOT NULL,
+    end_destination       VARCHAR(255) NOT NULL,
+    driver_username       VARCHAR(100)  NOT NULL,
+    ride_description      TEXT,
+
+    INDEX idx_ride_time (ride_time),
+    INDEX idx_passengers (number_of_passengers),
+    INDEX idx_starting_location (starting_location),
+    INDEX idx_end_destination  (end_destination)
 );
-
-CREATE INDEX idx_ride_time ON Rides (ride_time);
-CREATE INDEX idx_passengers ON Rides (number_of_passengers);
-CREATE INDEX idx_starting_location ON Rides (starting_location);
-CREATE INDEX idx_end_destination ON Rides (end_destination);
-
-
-
-
-
+// above 11 lines are updated Apr 18th by Weicheng for
+// creating a relatioinal table to users
 
 
 
