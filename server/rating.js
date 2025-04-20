@@ -16,22 +16,34 @@ const pool = new Pool({
 // Expected input: { ride_id, reviewer_id, driver_id, rating }
 // Returns the created rating row
 router.post('/', async (req, res) => {
+  const { ride_id, reviewer_id, driver_id, rating } = req.body;
+
   try {
-    const { ride_id, reviewer_id, driver_id, rating } = req.body;
-    const result = await pool.query(
-      'INSERT INTO Ratings (ride_id, reviewer_id, driver_id, rating) VALUES ($1, $2, $3, $4) RETURNING *',
-      [ride_id, reviewer_id, driver_id, rating]
-    );
+    const checkQuery = `
+      SELECT * FROM Ratings
+      WHERE reviewer_id = $1 AND ride_id = $2
+    `;
+    const existing = await pool.query(checkQuery, [reviewer_id, ride_id]);
+
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: 'You have already rated this ride.' });
+    }
+
+    const insertQuery = `
+      INSERT INTO Ratings (ride_id, reviewer_id, driver_id, rating)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+    `;
+    const result = await pool.query(insertQuery, [ride_id, reviewer_id, driver_id, rating]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    console.error('Error creating rating:', err);
-    res.status(500).json({ error: 'Failed to create rating' });
+    console.error('Failed to create rating:', err);
+    res.status(500).json({ error: 'Failed to submit rating.' });
   }
 });
 
 // ***** GET *****
 // Get all ratings or filter by driver_id
-// Supports query param: /ratings?driver_id=3
 router.get('/', async (req, res) => {
   try {
     const { driver_id } = req.query;
@@ -51,7 +63,6 @@ router.get('/', async (req, res) => {
 
 // ***** GET Average *****
 // Get the average rating for a driver
-// Example: /ratings/average/3
 router.get('/average/:driver_id', async (req, res) => {
   try {
     const { driver_id } = req.params;
@@ -66,4 +77,25 @@ router.get('/average/:driver_id', async (req, res) => {
   }
 });
 
+// ***** GET Stats *****
+// Get average rating and total count for a driver
+router.get('/stats/:driver_id', async (req, res) => {
+  try {
+    const { driver_id } = req.params;
+    const result = await pool.query(
+      `SELECT 
+         COUNT(*) AS total_ratings,
+         ROUND(AVG(rating)::numeric, 2) AS average_rating
+       FROM Ratings
+       WHERE driver_id = $1`,
+      [driver_id]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching rating stats:', err);
+    res.status(500).json({ error: 'Failed to fetch rating stats' });
+  }
+});
+
 module.exports = router;
+
