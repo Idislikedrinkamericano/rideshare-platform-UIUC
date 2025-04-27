@@ -19,11 +19,24 @@ router.post('/', async (req, res) => {
   const { ride_id, passenger_id } = req.body;
 
   try {
-    const { rows } = await pool.query(
-      'INSERT INTO Requests (ride_id, passenger_id) VALUES ($1, $2) RETURNING *',
-      [ride_id, passenger_id]
-    );
-    res.status(201).json(rows[0]);
+    const checkQuery = `
+      SELECT * FROM Requests 
+      WHERE ride_id = $1 AND passenger_id = $2
+    `;
+    const existing = await pool.query(checkQuery, [ride_id, passenger_id]);
+
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: 'You have already requested this ride.' });
+    }
+
+    const insertQuery = `
+      INSERT INTO Requests (ride_id, passenger_id)
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const result = await pool.query(insertQuery, [ride_id, passenger_id]);
+    res.status(201).json(result.rows[0]);
+
   } catch (err) {
     console.error('Failed to create request:', err);
     res.status(500).json({ error: 'Failed to create request.' });
