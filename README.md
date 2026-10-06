@@ -12,7 +12,7 @@ The surviving snapshot contained useful product ideas and partial implementation
 - Adds token-based authentication and authenticated API middleware.
 - Fixes ride creation so the driver comes from the authenticated user rather than an undefined `user_id`.
 - Replaces malformed dynamic ride-update logic with a smaller, ownership-aware API surface.
-- Integrates ride requests, approval/rejection, seat counts, My Trips, and ratings under one Express server.
+- Integrates ride requests, one-time approval/rejection, transactional seat counts, My Trips, and post-trip ratings under one Express server.
 - Replaces the draft database notes with valid PostgreSQL schema and indexes.
 - Rebuilds the React interface around a consistent responsive design system.
 - Adds a read-only demo fallback for ride discovery so the interface remains explorable when the local API is not running.
@@ -22,9 +22,9 @@ The surviving snapshot contained useful product ideas and partial implementation
 1. Create an account or sign in.
 2. Search upcoming rides by origin, destination, date, and seat count.
 3. Open a ride and request a seat.
-4. Drivers offer rides and manage incoming requests.
-5. Approved rides appear in **My Trips**.
-6. Approved passengers can rate a driver after a ride.
+4. Drivers offer rides and approve or decline incoming seat requests.
+5. Approved rides appear in **My Trips** for both drivers and passengers.
+6. After a completed ride, approved passengers can rate the driver from the dashboard.
 
 ## Stack
 
@@ -77,6 +77,10 @@ npm start
 ```
 
 The frontend runs at `http://localhost:3000` and proxies API requests to `http://localhost:4000`.
+
+## Validation
+
+The final revival source passes Node syntax validation across the Express server. The frontend dependency installation could not be completed in the packaging environment because outbound npm access timed out, so a full production React build should be run after `npm install` on a networked machine. No dependency directories are committed.
 
 ## Security note
 

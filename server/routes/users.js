@@ -1,13 +1,17 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { secret } = require('../middleware/auth');
 
 module.exports = (pool) => {
   const router = express.Router();
 
   router.post('/signup', async (req, res) => {
     const { username, email, password } = req.body;
-    if (!username || !email || !password || password.length < 8) {
+    const cleanUsername = typeof username === 'string' ? username.trim() : '';
+    const cleanEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+    if (cleanUsername.length < 2 || cleanUsername.length > 100 || !emailOk || typeof password !== 'string' || password.length < 8) {
       return res.status(400).json({ error: 'Username, email, and an 8+ character password are required.' });
     }
     try {
@@ -15,7 +19,7 @@ module.exports = (pool) => {
       const { rows } = await pool.query(
         `INSERT INTO users (username, email, password_hash)
          VALUES ($1, $2, $3) RETURNING id, username, email`,
-        [username.trim(), email.trim().toLowerCase(), passwordHash]
+        [cleanUsername, cleanEmail, passwordHash]
       );
       res.status(201).json({ user: rows[0] });
     } catch (err) {
@@ -35,7 +39,7 @@ module.exports = (pool) => {
       }
       const token = jwt.sign(
         { id: user.id, username: user.username },
-        process.env.JWT_SECRET || 'dev-only-secret',
+        secret(),
         { expiresIn: '7d' }
       );
       res.json({ token, user: { id: user.id, username: user.username, email: user.email } });

@@ -42,14 +42,16 @@ module.exports = (pool) => {
 
   router.post('/', requireAuth, async (req, res) => {
     const { ride_time, seats_available, starting_location, end_destination, ride_description } = req.body;
-    if (!ride_time || !starting_location || !end_destination || !Number.isInteger(Number(seats_available))) {
-      return res.status(400).json({ error: 'Time, locations, and available seats are required.' });
+    const seats = Number(seats_available);
+    if (!ride_time || !starting_location?.trim() || !end_destination?.trim() || !Number.isInteger(seats) || seats < 1 || seats > 8) {
+      return res.status(400).json({ error: 'Time, locations, and 1–8 available seats are required.' });
     }
+    if (Number.isNaN(Date.parse(ride_time)) || new Date(ride_time) <= new Date()) return res.status(400).json({ error: 'Departure must be a valid future time.' });
     try {
       const { rows } = await pool.query(
         `INSERT INTO rides (user_id, ride_time, seats_available, starting_location, end_destination, ride_description)
          VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-        [req.user.id, ride_time, Number(seats_available), starting_location, end_destination, ride_description || '']);
+        [req.user.id, ride_time, seats, starting_location.trim(), end_destination.trim(), (ride_description || '').trim()]);
       res.status(201).json(rows[0]);
     } catch (err) { console.error(err); res.status(500).json({ error: 'Could not create ride.' }); }
   });
