@@ -1,0 +1,3 @@
+const express=require('express'); const {requireAuth}=require('../middleware/auth');
+module.exports=(pool)=>{const router=express.Router(); router.use(requireAuth);
+router.get('/',async(req,res)=>{try{const {rows}=await pool.query(`SELECT r.*,u.username AS driver_username, CASE WHEN r.user_id=$1 THEN 'driver' ELSE 'passenger' END AS role FROM rides r JOIN users u ON u.id=r.user_id WHERE r.user_id=$1 OR EXISTS(SELECT 1 FROM requests q WHERE q.ride_id=r.id AND q.passenger_id=$1 AND q.status='approved') ORDER BY r.ride_time`,[req.user.id]);res.json(rows);}catch(e){console.error(e);res.status(500).json({error:'Could not load trips.'});}}); return router;};

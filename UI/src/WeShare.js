@@ -1,21 +1,2 @@
-import React from 'react'
-import { Layout, Button, Space } from 'antd'
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
-import Login from './login'
-import Signup from './signup'
-import Main from './main'
-import './WeShare.css'
-
-export default function WeShare() {
-  const navigate = useNavigate()
-  return (
-      <>
-          <Routes>
-              <Route path = {"/signup"} element = {<Signup/>}/>
-              <Route path = {"/login"} element = {<Login/>}/>
-              <Route path = {"/main"} element = {<Main/>}/>
-              <Route path = {"/"} element = {<Navigate to = {"/Login"}/>}/>
-          </Routes>
-      </>
-  )
-}
+import React from 'react'; import {Routes,Route} from 'react-router-dom'; import Nav from './components/Nav'; import Home from './pages/Home'; import Rides from './pages/Rides'; import RideDetail from './pages/RideDetail'; import Auth from './pages/Auth'; import CreateRide from './pages/CreateRide'; import Trips from './pages/Trips';
+export default function App(){return <><Nav/><Routes><Route path="/" element={<Home/>}/><Route path="/rides" element={<Rides/>}/><Route path="/rides/:id" element={<RideDetail/>}/><Route path="/login" element={<Auth mode="login"/>}/><Route path="/signup" element={<Auth mode="signup"/>}/><Route path="/create" element={<CreateRide/>}/><Route path="/trips" element={<Trips/>}/></Routes><footer><span>WeShare</span><span>Campus rides, shared simply.</span><span>Originally built at UIUC · Revived 2026</span></footer></>}
